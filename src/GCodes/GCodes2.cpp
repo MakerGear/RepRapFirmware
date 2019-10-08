@@ -1575,6 +1575,10 @@ bool GCodes::HandleMcode(GCodeBuffer& gb, const StringRef& reply)
 				{
 					gb.GetQuotedString(message.GetRef());
 					platform.Message(type, message.c_str());
+					if (type != HttpMessage)
+					 					{
+					 						platform.Message(type, "\n");
+					 					}
 				}
 			}
 		}

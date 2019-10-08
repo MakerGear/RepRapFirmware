@@ -3335,6 +3335,7 @@ void GCodes::ClearBedMapping()
 void GCodes::GetCurrentCoordinates(const StringRef& s) const
 {
 	float liveCoordinates[MaxTotalDrivers];
+	int uAxisSeen = 0;
 	reprap.GetMove().LiveCoordinates(liveCoordinates, reprap.GetCurrentXAxes(), reprap.GetCurrentYAxes());
 	const Tool * const currentTool = reprap.GetCurrentTool();
 	if (currentTool != nullptr)
@@ -3349,8 +3350,18 @@ void GCodes::GetCurrentCoordinates(const StringRef& s) const
 	for (size_t axis = 0; axis < numVisibleAxes; ++axis)
 	{
 		// Don't put a space after the colon in the response, it confuses Pronterface
+
+		//remove U from report for Octorpint compatibility.
+		if (axisLetters[axis] == 'U')
+		{
+			uAxisSeen = axis;
+			break;
+		}
 		s.catf("%c:%.3f ", axisLetters[axis], HideNan(currentUserPosition[axis]));
 	}
+
+	s.catf("E:%.3f ", (double)virtualExtruderPosition);
+
 	for (size_t i = numTotalAxes; i < MaxTotalDrivers; i++)
 	{
 		s.catf("E%u:%.1f ", i - numTotalAxes, (double)liveCoordinates[i]);
@@ -3370,6 +3381,9 @@ void GCodes::GetCurrentCoordinates(const StringRef& s) const
 	{
 		s.catf(" %.3f", HideNan(liveCoordinates[axis]));
 	}
+
+
+
 }
 
 // Set up a file to print, but don't print it yet.
