@@ -3381,8 +3381,11 @@ void GCodes::GetCurrentCoordinates(const StringRef& s) const
 	{
 		s.catf(" %.3f", HideNan(liveCoordinates[axis]));
 	}
-
-
+	//put U axis at end
+	if (uAxisSeen != 0)
+	{
+		s.catf(" %c:%.3f ", 'U', HideNan(currentUserPosition[uAxisSeen]));
+	}
 
 }
 
