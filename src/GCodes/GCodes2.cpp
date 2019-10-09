@@ -1629,12 +1629,13 @@ bool GCodes::HandleMcode(GCodeBuffer& gb, const StringRef& reply)
 	case 140: // Bed temperature
 	case 141: // Chamber temperature
 		{
+			//By defualt if no 'P' is passed, it must is read as a 0. We are going to change that to a '-1' to differentiate it - so if a '-1' or no P parameter are entered, all heaters will be set to the 'S' value. 
 			Heat& heat = reprap.GetHeat();
 			bool seen = false;
 
 			// Check if the heater index is passed
-			int index = gb.Seen('P') ? gb.GetIValue() : 0;
-			if (index < 0 || index >= (int)((code == 140) ? NumBedHeaters : NumChamberHeaters))
+			int index = gb.Seen('P') ? gb.GetIValue() : -1;
+			if (index < -1 || index >= (int)((code == 140) ? NumBedHeaters : NumChamberHeaters))
 			{
 				reply.printf("Invalid heater index '%d'", index);
 				result = GCodeResult::error;
@@ -1676,7 +1677,7 @@ bool GCodes::HandleMcode(GCodeBuffer& gb, const StringRef& reply)
 			{
 				seen = true;
 				const float temperature = gb.GetFValue();
-				if (currentHeater < 0)
+				if (currentHeater < -1)
 				{
 					if (temperature > 0.0)		// turning off a non-existent bed or chamber heater is not an error
 					{
@@ -1688,12 +1689,42 @@ bool GCodes::HandleMcode(GCodeBuffer& gb, const StringRef& reply)
 				{
 					if (temperature < NEARLY_ABS_ZERO)
 					{
-						heat.SwitchOff(currentHeater);
+						
+						if(index == -1)
+						{
+							heat.SwitchOff(heat.GetBedHeater(0));
+							heat.SwitchOff(heat.GetBedHeater(1));
+							heat.SwitchOff(heat.GetBedHeater(2));
+							heat.SwitchOff(heat.GetBedHeater(3));
+							//heat.SwitchOff(heat.GetBedHeater(4));
+						}
+						else
+						{
+							heat.SwitchOff(currentHeater);
+						}
 					}
 					else
 					{
-						heat.SetActiveTemperature(currentHeater, temperature);
-						heat.Activate(currentHeater);
+						
+						if(index == -1)
+						{
+							heat.SetActiveTemperature(heat.GetBedHeater(0), temperature);
+							heat.Activate(heat.GetBedHeater(0));
+							heat.SetActiveTemperature(heat.GetBedHeater(1), temperature);
+							heat.Activate(heat.GetBedHeater(1));
+							heat.SetActiveTemperature(heat.GetBedHeater(2), temperature);
+							heat.Activate(heat.GetBedHeater(2));
+							heat.SetActiveTemperature(heat.GetBedHeater(3), temperature);
+							heat.Activate(heat.GetBedHeater(3));
+							//heat.SetActiveTemperature(heat.GetBedHeater(4), temperature);
+							//heat.Activate(heat.GetBedHeater(4));
+						}
+						else
+						{
+							heat.SetActiveTemperature(currentHeater, temperature);
+							heat.Activate(currentHeater);
+						}
+						
 					}
 				}
 			}

@@ -12,7 +12,7 @@
 #ifndef VERSION
 #ifdef RTOS
 # define RTOSVER		"(RTOS)"
-# define MAIN_VERSION	"2.022"
+# define MAIN_VERSION	"2.023b"
 #else
 # define MAIN_VERSION	"1.23"
 # define RTOSVER
