@@ -1696,7 +1696,7 @@ bool GCodes::HandleMcode(GCodeBuffer& gb, const StringRef& reply)
 							heat.SwitchOff(heat.GetBedHeater(1));
 							heat.SwitchOff(heat.GetBedHeater(2));
 							heat.SwitchOff(heat.GetBedHeater(3));
-							//heat.SwitchOff(heat.GetBedHeater(4));
+							heat.SwitchOff(heat.GetBedHeater(4));
 						}
 						else
 						{
@@ -1716,8 +1716,8 @@ bool GCodes::HandleMcode(GCodeBuffer& gb, const StringRef& reply)
 							heat.Activate(heat.GetBedHeater(2));
 							heat.SetActiveTemperature(heat.GetBedHeater(3), temperature);
 							heat.Activate(heat.GetBedHeater(3));
-							//heat.SetActiveTemperature(heat.GetBedHeater(4), temperature);
-							//heat.Activate(heat.GetBedHeater(4));
+							heat.SetActiveTemperature(heat.GetBedHeater(4), temperature);
+							heat.Activate(heat.GetBedHeater(4));
 						}
 						else
 						{
